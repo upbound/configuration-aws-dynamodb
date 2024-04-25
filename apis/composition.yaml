@@ -1,0 +1,68 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: instance.dynamodb.aws.platform.upbound.io
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+    kind: XInstance
+
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: crossplane-contrib-function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        patchSets:
+          - name: common-parameters
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.providerConfigName
+                toFieldPath: spec.parameters.providerConfigName
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionPolicy
+                toFieldPath: spec.parameters.deletionPolicy
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.region
+                toFieldPath: spec.parameters.region
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tags
+                toFieldPath: spec.parameters.tags
+
+        resources:
+          - name: xKMS
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XKMS
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+
+          - name: xTable
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XTable
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+
+          - name: xTag
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XTag
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+
+          - name: xContributorInsights
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XContrihutorInsights
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters

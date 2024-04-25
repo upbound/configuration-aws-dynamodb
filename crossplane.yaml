@@ -1,0 +1,29 @@
+apiVersion: meta.pkg.crossplane.io/v1
+kind: Configuration
+metadata:
+  name: configuration-aws-dynamodb
+  annotations:
+    meta.crossplane.io/maintainer: The configuration-aws-dynamodb Configuration
+    meta.crossplane.io/source: github.com/upbound/configuration-aws-dynamodb
+    meta.crossplane.io/license: Apache-2.0
+    meta.crossplane.io/description: |
+      This configuration-aws-dynamodb configuration offers
+      ContributorInsights, GlobalTable, KinesisStreamingDestination,
+      TableItem, TableReplica, Table, and Tag provisioning
+      for AWS DynamoDB.
+    meta.crossplane.io/readme: |
+      This Configuration bundles an Upbound Cloud
+      extension and an API definition. The API will
+      allow control planes to provision AWS DynamoDB
+      using the provider-aws-dynamodb from the Upbound
+      marketplace.
+spec:
+  crossplane:
+    version: ">=v1.15.2-0"
+  dependsOn:
+    - provider: xpkg.upbound.io/upbound/provider-aws-dynamodb
+      version: "v1.3.1"
+    - function: xpkg.upbound.io/crossplane-contrib/function-patch-and-transform
+      version: "v0.5.0"
+    - configuration: xpkg.upbound.io/upbound/configuration-aws-network
+      version: "v0.13.0"
