@@ -1,0 +1,47 @@
+apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+kind: Instance
+metadata:
+  name: dynamodb-instance
+spec:
+  parameters:
+    attribute:
+      - name: UserId
+        attributeType: "S"
+      - name: GameTitle
+        attributeType: "S"
+    # Billing Mode is PROVISIONED or
+    # PAY-PER-REQUEST (required for replication unless autoscaling is
+    # configured)
+    billingMode: PROVISIONED
+    globalSecondaryIndex:
+      - hashKey: GameTitle
+        name: GameTitleIndex
+        nonKeyAttributes:
+          - UserId
+        projectionType: INCLUDE
+        rangeKey: TopScore
+        readCapacity: 10
+        writeCapacity: 10
+    hashKey: UserId
+    rangeKey: GameTitle
+    region: us-east-1
+    readCapacity: 1
+    writeCapacity: 1
+    tableItems:
+      - item: >-
+          '{
+            "UserId": {"S": "user01"},
+            "GameTitle": {"S": "Robot Quest"},
+            "TopScore": {"N": "123457"}
+          }'
+      - item: >-
+          '{
+            "UserId": {"S": "user02"},
+            "GameTitle": {"S": "Rocket League"},
+            "TopScore": {"N": "123456"}
+          }'
+    # Conditionally Offer Contributor Insights
+    contributorInsights: true
+    # Conditionally Offer Table Replica
+    tableReplica: false
+    tableReplicaRegion: us-west-1

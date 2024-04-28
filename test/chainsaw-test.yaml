@@ -1,0 +1,29 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: configuration-aws-dynamodb
+spec:
+  timeouts:
+    apply: 60s
+    assert: 60s
+    cleanup: 180s
+    delete: 180s
+    error: 60s
+    exec: 60s
+  skipDelete: false
+  steps:
+    - try:
+        - apply:
+            template: true
+            file: ../examples/instance.yaml
+    - try:
+        - assert:
+            file: ../examples/instance.yaml
+      catch:
+        - get:
+            resource: managed
+        - describe:
+            resource: dynamo-instance
+            selector: crossplane.io/claim-namespace=$NAMESPACE
+        - events:
+            selector: pkg.crossplane.io/provider=provider-aws-dynamodb

@@ -1,0 +1,136 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: CompositeResourceDefinition
+metadata:
+  name: xcontributorinsights.dynamodb.aws.platform.upbound.io
+spec:
+  group: dynamodb.aws.platform.upbound.io
+  names:
+    kind: XContributorInsight
+    plural: xcontributorinsights
+  defaultCompositionRef:
+    name: contributorinsight.dynamodb.aws.platform.upbound.io
+  versions:
+    - name: v1alpha1
+      served: true
+      referenceable: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          properties:
+            spec:
+              type: object
+              properties:
+                parameters:
+                  description: >-
+                    Upbound Platform DynamoDB ContributorInsights
+                  properties:
+                    deletionPolicy:
+                      description: Defaults to Delete
+                      enum:
+                        - Delete
+                        - Orphan
+                      type: string
+                      default: Delete
+                    indexName:
+                      description: The global secondary index name
+                      type: string
+                    region:
+                      description: Region is the region you'd like your resource to
+                        be created in.
+                      type: string
+                    tableName:
+                      description: The name of the table to enable contributor insights
+                      type: string
+                    tableNameRef:
+                      description: Reference to a Table to populate tableName.
+                      properties:
+                        name:
+                          description: Name of the referenced object.
+                          type: string
+                        policy:
+                          description: Policies for referencing.
+                          properties:
+                            resolution:
+                              default: Required
+                              description: |-
+                                Resolution specifies whether resolution of this reference is required.
+                                The default is 'Required', which means the reconcile will fail if the
+                                reference cannot be resolved. 'Optional' means this reference will be
+                                a no-op if it cannot be resolved.
+                              enum:
+                                - Required
+                                - Optional
+                              type: string
+                            resolve:
+                              description: |-
+                                Resolve specifies when this reference should be resolved. The default
+                                is 'IfNotPresent', which will attempt to resolve the reference only when
+                                the corresponding field is not present. Use 'Always' to resolve the
+                                reference on every reconcile.
+                              enum:
+                                - Always
+                                - IfNotPresent
+                              type: string
+                          type: object
+                      required:
+                        - name
+                      type: object
+                    tableNameSelector:
+                      description: Selector for a Table to populate tableName.
+                      properties:
+                        matchControllerRef:
+                          description: |-
+                            MatchControllerRef ensures an object with the same controller reference
+                            as the selecting object is selected.
+                          type: boolean
+                        matchLabels:
+                          additionalProperties:
+                            type: string
+                          description: MatchLabels ensures an object with matching labels
+                            is selected.
+                          type: object
+                        policy:
+                          description: Policies for selection.
+                          properties:
+                            resolution:
+                              default: Required
+                              description: |-
+                                Resolution specifies whether resolution of this reference is required.
+                                The default is 'Required', which means the reconcile will fail if the
+                                reference cannot be resolved. 'Optional' means this reference will be
+                                a no-op if it cannot be resolved.
+                              enum:
+                                - Required
+                                - Optional
+                              type: string
+                            resolve:
+                              description: |-
+                                Resolve specifies when this reference should be resolved. The default
+                                is 'IfNotPresent', which will attempt to resolve the reference only when
+                                the corresponding field is not present. Use 'Always' to resolve the
+                                reference on every reconcile.
+                              enum:
+                                - Always
+                                - IfNotPresent
+                              type: string
+                          type: object
+                      type: object
+                    providerConfigName:
+                      description: >-
+                        Crossplane ProviderConfig to use for
+                        provisioning the resources.
+                      type: string
+                      default: default
+                  required:
+                    - deletionPolicy
+                    - providerConfigName
+                    - region
+                  type: object
+              required:
+                - parameters
+            status:
+              properties:
+                dynamodbContributorInsights:
+                  type: object
+                  x-kubernetes-preserve-unknown-fields: true

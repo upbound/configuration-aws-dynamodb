@@ -14,7 +14,7 @@ spec:
   pipeline:
     - step: patch-and-transform
       functionRef:
-        name: crossplane-contrib-function-patch-and-transform
+        name: function-patch-and-transform
       input:
         apiVersion: pt.fn.crossplane.io/v1beta1
         kind: Resources
@@ -30,19 +30,7 @@ spec:
               - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.region
                 toFieldPath: spec.parameters.region
-              - type: FromCompositeFieldPath
-                fromFieldPath: spec.parameters.tags
-                toFieldPath: spec.parameters.tags
-
         resources:
-          - name: xKMS
-            base:
-              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-              kind: XKMS
-            patches:
-              - type: PatchSet
-                patchSetName: common-parameters
-
           - name: xTable
             base:
               apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
@@ -50,19 +38,96 @@ spec:
             patches:
               - type: PatchSet
                 patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.attribute
+                toFieldPath: spec.parameters.attribute
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.billingMode
+                toFieldPath: spec.parameters.billingMode
+              - type: FromCompositeFieldPath
+                fromFieldPath: globalSecondaryIndex
+                toFieldPath: globalSecondaryIndex
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.hashKey
+                toFieldPath: spec.parameters.hashKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.rangeKey
+                toFieldPath: spec.parameters.rangeKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.readCapacity
+                toFieldPath: spec.parameters.readCapacity
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.writeCapacity
+                toFieldPath: spec.parameters.writeCapacity
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTable
+                toFieldPath: status.dynamodbTable
 
-          - name: xTag
+          - name: xTableReplica
             base:
               apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-              kind: XTag
+              kind: XTableReplica
             patches:
               - type: PatchSet
                 patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.arn
+                toFieldPath: spec.parameters.globalTableArn
+                policy:
+                  fromFieldPath: Required
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableReplicaRegion
+                toFieldPath: spec.parameters.region
 
           - name: xContributorInsights
             base:
               apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-              kind: XContrihutorInsights
+              kind: XContributorInsight
             patches:
               - type: PatchSet
                 patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.id
+                toFieldPath: spec.parameters.tableName
+                policy:
+                  fromFieldPath: Required
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbContributorInsights
+                toFieldPath: status.dynamodbContributorInsights
+
+          - name: xTableItem
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XTableItem
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.id
+                toFieldPath: spec.parameters.tableName
+                policy:
+                  fromFieldPath: Required
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableItems
+                toFieldPath: spec.parameters.tableItems
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.hashKey
+                toFieldPath: spec.parameters.hashKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.rangeKey
+                toFieldPath: spec.parameters.rangeKey
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTableItems
+                toFieldPath: status.dynamodbTableItems
+
+    - step: cel-filter
+      functionRef:
+        name: function-cel-filter
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Filters
+        filters:
+          - name: tableReplica
+            expression: observed.composite.resource.spec.parameters.tableReplica == true
+          - name: xContributorInsights
+            expression: observed.composite.resource.spec.parameters.contributorInsights == true

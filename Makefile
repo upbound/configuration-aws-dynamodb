@@ -72,16 +72,21 @@ uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
 	@KUBECTL=$(KUBECTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) KUTTL=$(KUTTL) $(UPTEST) e2e examples/table.yaml --setup-script=test/setup.sh --default-timeout=3600 || $(FAIL)
 	@$(OK) running automated tests
 
+chainsaw:
+	@$(INFO) running automated kyverno chainsaw tests
+	chainsaw test
+	@$(OK) running automated kyverno chainsaw tests
+
 # This target requires the following environment variables to be set:
 # - UPTEST_CLOUD_CREDENTIALS, cloud credentials for the provider being tested, e.g. export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)
-e2e: build controlplane.up local.xpkg.deploy.configuration.$(PROJECT_NAME) uptest
+e2e: build controlplane.up local.xpkg.deploy.configuration.$(PROJECT_NAME) chainsaw uptest
 
 render:
-	crossplane beta render examples/table.yaml apis/composition.yaml examples/function/function.yaml -r
+	crossplane beta render examples/instance.yaml apis/composition.yaml examples/function/function.yaml -r
 
 yamllint:
 	@$(INFO) running yamllint
 	@yamllint ./apis || $(FAIL)
 	@$(OK) running yamllint
 
-.PHONY: uptest e2e bootstrap
+.PHONY: uptest chainsaw e2e bootstrap

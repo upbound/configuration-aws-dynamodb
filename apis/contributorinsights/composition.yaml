@@ -1,0 +1,55 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: contributorinsight.dynamodb.aws.platform.upbound.io
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+    kind: XContributorInsight
+
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        patchSets:
+          - name: common-parameters
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.providerConfigName
+                toFieldPath: spec.providerConfigRef.name
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionPolicy
+                toFieldPath: spec.deletionPolicy
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.region
+                toFieldPath: spec.forProvider.region
+        resources:
+          - name: contributorInsights
+            base:
+              apiVersion: dynamodb.aws.upbound.io/v1beta1
+              kind: ContributorInsights
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.indexName
+                toFieldPath: spec.forProvider.indexName
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableName
+                toFieldPath: spec.forProvider.tableName
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableNameRef
+                toFieldPath: spec.forProvider.tableNameRef
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableNameSelector
+                toFieldPath: spec.forProvider.tableNameSelector
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider
+                toFieldPath: status.dynamodbContributorInsights
