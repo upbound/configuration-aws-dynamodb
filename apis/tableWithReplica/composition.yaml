@@ -1,0 +1,136 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: tablewithreplica.dynamodb.aws.platform.upbound.io
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+    kind: XTableWithReplica
+
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: crossplane-contrib-function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        patchSets:
+          - name: common-parameters
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.providerConfigName
+                toFieldPath: spec.providerConfigRef.name
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionPolicy
+                toFieldPath: spec.deletionPolicy
+        resources:
+          - name: tableReplica
+            base:
+              apiVersion: dynamodb.aws.upbound.io/v1beta1
+              kind: TableReplica
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableReplicaRegion
+                toFieldPath: spec.forProvider.region
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.arn
+                toFieldPath: spec.forProvider.globalTableArn
+                policy:
+                  fromFieldPath: Required
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.kmsKeyArn
+                toFieldPath: spec.forProvider.kmsKeyArn
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.kmsKeyArnRef
+                toFieldPath: spec.forProvider.kmsKeyArnRef
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.kmsKeyArnSelector
+                toFieldPath: spec.forProvider.kmsKeyArnSelector
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.pointInTimeRecovery
+                toFieldPath: spec.forProvider.pointInTimeRecovery
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableClassOverride
+                toFieldPath: spec.forProvider.tableClassOverride
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tags
+                toFieldPath: spec.forProvider.tags
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider
+                toFieldPath: status.dynamodbTableReplica
+          - name: table
+            base:
+              apiVersion: dynamodb.aws.upbound.io/v1beta1
+              kind: Table
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.region
+                toFieldPath: spec.forProvider.region
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.attribute
+                toFieldPath: spec.forProvider.attribute
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.billingMode
+                toFieldPath: spec.forProvider.billingMode
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionProtectionEnabled
+                toFieldPath: spec.forProvider.deletionProtectionEnabled
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.globalSecondaryIndex
+                toFieldPath: spec.forProvider.globalSecondaryIndex
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.hashKey
+                toFieldPath: spec.forProvider.hashKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.importTable
+                toFieldPath: spec.forProvider.importTable
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.localSecondaryIndex
+                toFieldPath: spec.forProvider.localSecondaryIndex
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.pointInTimeRecovery
+                toFieldPath: spec.forProvider.pointInTimeRecovery
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.rangeKey
+                toFieldPath: spec.forProvider.rangeKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.replica
+                toFieldPath: spec.forProvider.replica
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.restoreDateTime
+                toFieldPath: spec.forProvider.restoreDateTime
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.restoreSourceName
+                toFieldPath: spec.forProvider.restoreSourceName
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.restoreToLatestTime
+                toFieldPath: spec.forProvider.restoreToLatestTime
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.serverSideEncryption
+                toFieldPath: spec.forProvider.serverSideEncryption
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.streamEnabled
+                toFieldPath: spec.forProvider.streamEnabled
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.streamViewType
+                toFieldPath: spec.forProvider.streamViewType
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableClass
+                toFieldPath: spec.forProvider.tableClass
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tags
+                toFieldPath: spec.forProvider.tags
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.ttl
+                toFieldPath: spec.forProvider.ttl
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider
+                toFieldPath: status.dynamodbTable

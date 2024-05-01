@@ -69,7 +69,7 @@ build.init: $(UP)
 #   You can check the basic implementation here: https://github.com/upbound/uptest/blob/main/internal/templates/01-delete.yaml.tmpl.
 uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
 	@$(INFO) running automated tests
-	@KUBECTL=$(KUBECTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) KUTTL=$(KUTTL) $(UPTEST) e2e examples/table.yaml --setup-script=test/setup.sh --default-timeout=3600 || $(FAIL)
+	@KUBECTL=$(KUBECTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) KUTTL=$(KUTTL) $(UPTEST) e2e examples/instance-without-replica.yaml --setup-script=test/setup.sh --default-timeout=3600 || $(FAIL)
 	@$(OK) running automated tests
 
 chainsaw:
@@ -82,11 +82,12 @@ chainsaw:
 e2e: build controlplane.up local.xpkg.deploy.configuration.$(PROJECT_NAME) chainsaw uptest
 
 render:
-	crossplane beta render examples/instance.yaml apis/composition.yaml examples/function/function.yaml -r
+	crossplane beta render examples/instance-without-replica.yaml apis/composition.yaml examples/function/function.yaml -r
+	crossplane beta render examples/instance-with-replica.yaml apis/composition.yaml examples/function/function.yaml -r
 
 yamllint:
 	@$(INFO) running yamllint
 	@yamllint ./apis || $(FAIL)
 	@$(OK) running yamllint
 
-.PHONY: uptest chainsaw e2e bootstrap
+.PHONY: uptest chainsaw chainsaw-test.yaml e2e bootstrap

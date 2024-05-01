@@ -12,45 +12,9 @@ spec:
 
   mode: Pipeline
   pipeline:
-#   - step: patch-and-transform
-#     functionRef:
-#       name: function-patch-and-transform
-#     input:
-#       apiVersion: pt.fn.crossplane.io/v1beta1
-#       kind: Resources
-#       resources:
-#         - name: xTableItems
-#           base:
-#             apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-#             kind: XTableItems
-#           patches:
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.providerConfigName
-#               toFieldPath: spec.providerConfigRef.name
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.deletionPolicy
-#               toFieldPath: spec.deletionPolicy
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.region
-#               toFieldPath: spec.forProvider.region
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.hashKey
-#               toFieldPath: spec.parameters.hashKey
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.item
-#               toFieldPath: spec.parameters.item
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.rangeKey
-#               toFieldPath: spec.parameters.rangeKey
-#             - type: FromCompositeFieldPath
-#               fromFieldPath: spec.parameters.tableName
-#               toFieldPath: spec.parameters.tableName
-#             - fromFieldPath: status.atProvider
-#               toFieldPath: status.dynamodbTableItems
-
     - step: go-templating
       functionRef:
-        name: function-go-templating
+        name: crossplane-contrib-function-go-templating
       input:
         apiVersion: gotemplating.fn.crossplane.io/v1beta1
         kind: GoTemplate
@@ -77,4 +41,4 @@ spec:
 
     - step: automatically-detect-ready-composed-resources
       functionRef:
-        name: function-auto-ready
+        name: crossplane-contrib-function-auto-ready

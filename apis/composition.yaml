@@ -14,7 +14,7 @@ spec:
   pipeline:
     - step: patch-and-transform
       functionRef:
-        name: function-patch-and-transform
+        name: crossplane-contrib-function-patch-and-transform
       input:
         apiVersion: pt.fn.crossplane.io/v1beta1
         kind: Resources
@@ -45,8 +45,8 @@ spec:
                 fromFieldPath: spec.parameters.billingMode
                 toFieldPath: spec.parameters.billingMode
               - type: FromCompositeFieldPath
-                fromFieldPath: globalSecondaryIndex
-                toFieldPath: globalSecondaryIndex
+                fromFieldPath: spec.parameters.globalSecondaryIndex
+                toFieldPath: spec.parameters.globalSecondaryIndex
               - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.hashKey
                 toFieldPath: spec.parameters.hashKey
@@ -57,27 +57,55 @@ spec:
                 fromFieldPath: spec.parameters.readCapacity
                 toFieldPath: spec.parameters.readCapacity
               - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tags
+                toFieldPath: spec.parameters.tags
+              - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.writeCapacity
                 toFieldPath: spec.parameters.writeCapacity
               - type: ToCompositeFieldPath
                 fromFieldPath: status.dynamodbTable
                 toFieldPath: status.dynamodbTable
 
-          - name: xTableReplica
+          - name: xTableWithReplica
             base:
               apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-              kind: XTableReplica
+              kind: XTableWithReplica
             patches:
               - type: PatchSet
                 patchSetName: common-parameters
               - type: FromCompositeFieldPath
-                fromFieldPath: status.dynamodbTable.arn
-                toFieldPath: spec.parameters.globalTableArn
-                policy:
-                  fromFieldPath: Required
-              - type: FromCompositeFieldPath
                 fromFieldPath: spec.parameters.tableReplicaRegion
-                toFieldPath: spec.parameters.region
+                toFieldPath: spec.parameters.tableReplicaRegion
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.attribute
+                toFieldPath: spec.parameters.attribute
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.billingMode
+                toFieldPath: spec.parameters.billingMode
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.globalSecondaryIndex
+                toFieldPath: spec.parameters.globalSecondaryIndex
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.hashKey
+                toFieldPath: spec.parameters.hashKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.rangeKey
+                toFieldPath: spec.parameters.rangeKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.readCapacity
+                toFieldPath: spec.parameters.readCapacity
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tags
+                toFieldPath: spec.parameters.tags
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.writeCapacity
+                toFieldPath: spec.parameters.writeCapacity
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTable
+                toFieldPath: status.dynamodbTable
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTableReplica
+                toFieldPath: status.dynamodbTableReplica
 
           - name: xContributorInsights
             base:
@@ -122,12 +150,14 @@ spec:
 
     - step: cel-filter
       functionRef:
-        name: function-cel-filter
+        name: crossplane-contrib-function-cel-filter
       input:
         apiVersion: pt.fn.crossplane.io/v1beta1
         kind: Filters
         filters:
-          - name: tableReplica
+          - name: xTable
+            expression: observed.composite.resource.spec.parameters.tableReplica == false
+          - name: xTableWithReplica
             expression: observed.composite.resource.spec.parameters.tableReplica == true
           - name: xContributorInsights
             expression: observed.composite.resource.spec.parameters.contributorInsights == true

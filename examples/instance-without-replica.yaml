@@ -1,0 +1,52 @@
+apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+kind: Instance
+metadata:
+  name: ddb-without-replica
+spec:
+  parameters:
+    region: us-west-1
+    # Conditionally Offer Contributor Insights
+    contributorInsights: true
+    # Conditionally Offer Table Replica
+    tableReplica: false
+    # capacity can not be set when billing_mode is "PAY_PER_REQUEST"
+    readCapacity: 10
+    writeCapacity: 10
+    # Billing Mode is PROVISIONED or
+    # PAY_PER_REQUEST (required for replication unless autoscaling is
+    # configured)
+    billingMode: PROVISIONED
+    attribute:
+      - name: UserId
+        type: "S"
+      - name: GameTitle
+        type: "S"
+      - name: TopScore
+        type: "N"
+    globalSecondaryIndex:
+      - hashKey: GameTitle
+        name: GameTitleIndex
+        nonKeyAttributes:
+          - UserId
+        projectionType: INCLUDE
+        rangeKey: TopScore
+        readCapacity: 10
+        writeCapacity: 10
+    hashKey: UserId
+    rangeKey: GameTitle
+    tableItems:
+      - item: >-
+          '{
+            "UserId": {"S": "user01"},
+            "GameTitle": {"S": "Robot Quest"},
+            "TopScore": {"N": "123457"}
+          }'
+      - item: >-
+          '{
+            "UserId": {"S": "user02"},
+            "GameTitle": {"S": "Rocket League"},
+            "TopScore": {"N": "123456"}
+          }'
+    tags:
+      Environment: production
+      Name: ddb-without-replica-1

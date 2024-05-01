@@ -14,11 +14,24 @@ spec:
   steps:
     - try:
         - apply:
-            template: true
-            file: ../examples/instance.yaml
+            file: ../examples/instance-without-replica.yaml
     - try:
         - assert:
-            file: ../examples/instance.yaml
+            file: ../examples/instance-without-replica.yaml
+      catch:
+        - get:
+            resource: managed
+        - describe:
+            resource: dynamo-instance
+            selector: crossplane.io/claim-namespace=$NAMESPACE
+        - events:
+            selector: pkg.crossplane.io/provider=provider-aws-dynamodb
+    - try:
+        - apply:
+            file: ../examples/instance-with-replica.yaml
+    - try:
+        - assert:
+            file: ../examples/instance-with-replica.yaml
       catch:
         - get:
             resource: managed
