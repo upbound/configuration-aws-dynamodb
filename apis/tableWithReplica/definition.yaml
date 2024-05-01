@@ -57,8 +57,8 @@ spec:
                                 reference cannot be resolved. 'Optional' means this reference will be
                                 a no-op if it cannot be resolved.
                               enum:
-                              - Required
-                              - Optional
+                                - Required
+                                - Optional
                               type: string
                             resolve:
                               description: |-
@@ -67,12 +67,12 @@ spec:
                                 the corresponding field is not present. Use 'Always' to resolve the
                                 reference on every reconcile.
                               enum:
-                              - Always
-                              - IfNotPresent
+                                - Always
+                                - IfNotPresent
                               type: string
                           type: object
                       required:
-                      - name
+                        - name
                       type: object
                     kmsKeyArnSelector:
                       description: Selector for a Key in kms to populate kmsKeyArn.
@@ -99,8 +99,8 @@ spec:
                                 reference cannot be resolved. 'Optional' means this reference will be
                                 a no-op if it cannot be resolved.
                               enum:
-                              - Required
-                              - Optional
+                                - Required
+                                - Optional
                               type: string
                             resolve:
                               description: |-
@@ -109,8 +109,8 @@ spec:
                                 the corresponding field is not present. Use 'Always' to resolve the
                                 reference on every reconcile.
                               enum:
-                              - Always
-                              - IfNotPresent
+                                - Always
+                                - IfNotPresent
                               type: string
                           type: object
                       type: object
@@ -309,17 +309,6 @@ spec:
                             type: string
                         type: object
                       type: array
-                    pointInTimeRecovery:
-                      description: Enable point-in-time recovery options. See below.
-                      items:
-                        properties:
-                          enabled:
-                            description: Whether to enable point-in-time recovery. It
-                              can take 10 minutes to enable for new tables. If the point_in_time_recovery
-                              block is not provided, this defaults to false.
-                            type: boolean
-                        type: object
-                      type: array
                     rangeKey:
                       description: >-
                         Attribute to use as the range (sort) key.
@@ -418,12 +407,6 @@ spec:
                         Valid values are STANDARD and STANDARD_INFREQUENT_ACCESS.
                         Default value is STANDARD.
                       type: string
-                    tags:
-                      additionalProperties:
-                        type: string
-                      description: Key-value map of resource tags.
-                      type: object
-                      x-kubernetes-map-type: granular
                     ttl:
                       description: Configuration block for TTL. See below.
                       items:
