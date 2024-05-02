@@ -167,4 +167,3 @@ your AWS config credentials file. It will need an AWS access key id,
 an AWS secret access key, and depending on your setup am AWS session token.
 
 You may also run `make chainsaw` tests.
-
