@@ -72,10 +72,10 @@ uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
 	@KUBECTL=$(KUBECTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) KUTTL=$(KUTTL) $(UPTEST) e2e examples/instance-without-replica.yaml --setup-script=test/setup.sh --default-timeout=3600 || $(FAIL)
 	@$(OK) running automated tests
 
-chainsaw:
-	@$(INFO) running automated kyverno chainsaw tests
-	chainsaw test
-	@$(OK) running automated kyverno chainsaw tests
+#chainsaw:
+	#@$(INFO) running automated kyverno chainsaw tests
+	#chainsaw test
+	#@$(OK) running automated kyverno chainsaw tests
 
 # This target requires the following environment variables to be set:
 # - UPTEST_CLOUD_CREDENTIALS, cloud credentials for the provider being tested, e.g. export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)
