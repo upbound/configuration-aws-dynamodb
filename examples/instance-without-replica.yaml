@@ -2,6 +2,7 @@ apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
 kind: Instance
 metadata:
   name: ddb-without-replica
+  namespace: default
 spec:
   parameters:
     region: us-west-1

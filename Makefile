@@ -23,7 +23,7 @@ UPTEST_VERSION = v0.11.0
 # certain conventions such as the default examples root or package directory.
 XPKG_DIR = $(shell pwd)
 XPKG_EXAMPLES_DIR = examples
-XPKG_IGNORE = .github/workflows/ci.yaml,.github/workflows/tag.yml,.github/workflows/e2e.yaml,.github/workflows/yamllint.yaml,init/*.yaml,.work/uptest-datasource.yaml,test/provider/*.yaml,examples/*.yaml
+XPKG_IGNORE = .github/workflows/ci.yaml,.github/workflows/tag.yml,.github/workflows/e2e.yaml,.github/workflows/yamllint.yaml,init/*.yaml,.work/uptest-datasource.yaml,test/provider/*.yaml,examples/*.yaml,debug/*.yaml,test/*.yaml
 
 XPKG_REG_ORGS ?= xpkg.upbound.io/upbound
 # NOTE(hasheddan): skip promoting on xpkg.upbound.io as channel tags are
@@ -69,13 +69,13 @@ build.init: $(UP)
 #   You can check the basic implementation here: https://github.com/upbound/uptest/blob/main/internal/templates/01-delete.yaml.tmpl.
 uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
 	@$(INFO) running automated tests
-	@KUBECTL=$(KUBECTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) KUTTL=$(KUTTL) $(UPTEST) e2e examples/instance-without-replica.yaml --setup-script=test/setup.sh --default-timeout=3600 || $(FAIL)
+	@KUBECTL=$(KUBECTL) CROSSPLANE_NAMESPACE=$(CROSSPLANE_NAMESPACE) KUTTL=$(KUTTL) $(UPTEST) e2e examples/instance-without-replica.yaml --data-source="${UPTEST_DATASOURCE_PATH}" --setup-script=test/setup.sh --default-timeout=3600 || $(FAIL)
 	@$(OK) running automated tests
 
-#chainsaw:
-	#@$(INFO) running automated kyverno chainsaw tests
-	#chainsaw test
-	#@$(OK) running automated kyverno chainsaw tests
+#chainsaw: $(CHAINSAW)
+#	@$(INFO) running automated kyverno chainsaw tests
+#	@$(CHAINSAW) test
+#	@$(OK) running automated kyverno chainsaw tests
 
 # This target requires the following environment variables to be set:
 # - UPTEST_CLOUD_CREDENTIALS, cloud credentials for the provider being tested, e.g. export UPTEST_CLOUD_CREDENTIALS=$(cat ~/.aws/credentials)

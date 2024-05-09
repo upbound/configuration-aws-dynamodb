@@ -1,0 +1,36 @@
+---
+apiVersion: dynamodb.aws.upbound.io/v1beta1
+kind: ContributorInsights
+metadata:
+  annotations:
+    crossplane.io/composition-resource-name: contributorInsights
+  labels:
+    crossplane.io/claim-name: ddb-without-replica
+  ownerReferences:
+  - apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: XContributorInsight
+spec:
+  deletionPolicy: Delete
+  forProvider:
+    region: us-west-1
+  providerConfigRef:
+    name: default
+status:
+  atProvider:
+    indexName: ""
+    tableName: ddb-without-replica-
+  conditions:
+  - lastTransitionTime:
+    reason: Available
+    status: "True"
+    type: Ready
+  - lastTransitionTime:
+    reason: ReconcileSuccess
+    status: "True"
+    type: Synced
+  - lastTransitionTime:
+    reason: Success
+    status: "True"
+    type: LastAsyncOperation
