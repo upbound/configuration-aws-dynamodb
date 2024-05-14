@@ -297,9 +297,6 @@ spec:
                         type: object
                       type: array
                     pointInTimeRecovery:
-                      description: Whether to enable Point In Time Recovery for the
-                        replica. Default is false.
-                    pointInTimeRecovery:
                       description: >-
                         Whether to enable point-in-time recovery. It
                         can take 10 minutes to enable for new tables.
