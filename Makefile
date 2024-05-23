@@ -79,8 +79,8 @@ uptest: $(UPTEST) $(KUBECTL) $(KUTTL)
 e2e: build controlplane.up local.xpkg.deploy.configuration.$(PROJECT_NAME) chainsaw uptest
 
 render:
-	crossplane beta render examples/instance-without-replica.yaml apis/composition.yaml examples/function/function.yaml -r
-	crossplane beta render examples/instance-with-replica.yaml apis/composition.yaml examples/function/function.yaml -r
+	crossplane beta render examples/instance-without-replica.yaml apis/composition.yaml examples/function.yaml -r
+	crossplane beta render examples/instance-with-replica.yaml apis/composition.yaml examples/function.yaml -r
 
 yamllint:
 	@$(INFO) running yamllint
