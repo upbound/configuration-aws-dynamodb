@@ -69,16 +69,15 @@ spec:
 The corresponding `crossplane beta trace` resources are as follows:
 
 ```shell
-NAME                                                           SYNCED   READY   STATUS
-Instance/ddb-without-replica (default)                         True     True    Available
-└─ XInstance/ddb-without-replica-rqj2b                         True     True    Available
-   ├─ XContributorInsight/ddb-without-replica-rqj2b-qxbt4      True     True    Available
-   │  └─ ContributorInsights/ddb-without-replica-rqj2b-jg5f7   True     True    Available
-   ├─ XTableItem/ddb-without-replica-rqj2b-rkshd               True     True    Available
-   │  ├─ TableItem/ddb-without-replica-rqj2b-5v2hz             True     True    Available
-   │  └─ TableItem/ddb-without-replica-rqj2b-xcbhn             True     True    Available
-   └─ XTable/ddb-without-replica-rqj2b-vt8wh                   True     True    Available
-      └─ Table/ddb-without-replica-rqj2b-46f9b                 True     True    Available
+NAME                                                        SYNCED   READY   STATUS
+Instance/ddb-without-replica (default)                      True     True    Available
+└─ XInstance/ddb-without-replica-7bssl                      True     True    Available
+   ├─ XTableItemSet/ddb-without-replica-7bssl-86dnv         True     True    Available
+   │  ├─ TableItem/ddb-without-replica-7bssl-lnwbx          True     True    Available
+   │  └─ TableItem/ddb-without-replica-7bssl-w898j          True     True    Available
+   ├─ XTable/ddb-without-replica-7bssl-p6r2c                True     True    Available
+   │  └─ Table/ddb-without-replica-7bssl-5x966              True     True    Available
+   └─ ContributorInsights/ddb-without-replica-7bssl-ggsq2   True     True    Available
 ```
 
 ## DynamoDB Table With Replica
@@ -146,17 +145,16 @@ spec:
 The corresponding `crossplane beta trace` resources are as follows:
 
 ```shell
-NAME                                                        SYNCED   READY   STATUS
-Instance/ddb-with-replica (default)                         True     True    Available
-└─ XInstance/ddb-with-replica-56fnm                         True     True    Available
-   ├─ XContributorInsight/ddb-with-replica-56fnm-7br6c      True     True    Available
-   │  └─ ContributorInsights/ddb-with-replica-56fnm-m6vw2   True     True    Available
-   ├─ XTableItem/ddb-with-replica-56fnm-f8qks               True     True    Available
-   │  ├─ TableItem/ddb-with-replica-56fnm-rwnqt             True     True    Available
-   │  └─ TableItem/ddb-with-replica-56fnm-t6wrn             True     True    Available
-   └─ XTableWithReplica/ddb-with-replica-56fnm-tqrh7        True     True    Available
-      ├─ TableReplica/ddb-with-replica-56fnm-ftwmt          True     True    Available
-      └─ Table/ddb-with-replica-56fnm-pwm68                 True     True    Available
+NAME                                                     SYNCED   READY   STATUS
+Instance/ddb-with-replica (default)                      True     True    Available
+└─ XInstance/ddb-with-replica-fms4w                      True     True    Available
+   ├─ XTableItemSet/ddb-with-replica-fms4w-n6t4f         True     True    Available
+   │  ├─ TableItem/ddb-with-replica-fms4w-jmchl          True     True    Available
+   │  └─ TableItem/ddb-with-replica-fms4w-ztmjg          True     True    Available
+   ├─ XTable/ddb-with-replica-fms4w-v62p2                True     True    Available
+   │  ├─ TableReplica/ddb-with-replica-fms4w-m2dvr       True     True    Available
+   │  └─ Table/ddb-with-replica-fms4w-49s7x              True     True    Available
+   └─ ContributorInsights/ddb-with-replica-fms4w-7vslb   True     True    Available
 ```
 
 ## Tests

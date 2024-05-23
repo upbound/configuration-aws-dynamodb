@@ -32,7 +32,7 @@ spec:
             kind: TableReplica
             metadata:
               annotations:
-                {{ setResourceNameAnnotation (print "tableReplica") }}
+                {{ setResourceNameAnnotation "tableReplica" }}
             spec:
               deletionPolicy: {{ $spec.parameters.deletionPolicy }}
               forProvider:
@@ -66,7 +66,7 @@ spec:
             kind: Table
             metadata:
               annotations:
-                {{ setResourceNameAnnotation (print "table") }}
+                {{ setResourceNameAnnotation "table" }}
             spec:
               deletionPolicy: {{ $spec.parameters.deletionPolicy }}
               forProvider:

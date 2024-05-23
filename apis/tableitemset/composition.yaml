@@ -2,13 +2,13 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: Composition
 metadata:
-  name: tableitem.dynamodb.aws.platform.upbound.io
+  name: tableitemset.dynamodb.aws.platform.upbound.io
   labels:
     provider: aws
 spec:
   compositeTypeRef:
     apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-    kind: XTableItem
+    kind: XTableItemSet
 
   mode: Pipeline
   pipeline:

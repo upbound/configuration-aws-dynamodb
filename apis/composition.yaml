@@ -78,26 +78,38 @@ spec:
                 fromFieldPath: status.dynamodbTableReplica
                 toFieldPath: status.dynamodbTableReplica
 
-          - name: xContributorInsights
+          - name: contributorInsights
             base:
-              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-              kind: XContributorInsight
+              apiVersion: dynamodb.aws.upbound.io/v1beta1
+              kind: ContributorInsights
             patches:
-              - type: PatchSet
-                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.providerConfigName
+                toFieldPath: spec.providerConfigRef.name
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionPolicy
+                toFieldPath: spec.deletionPolicy
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.region
+                toFieldPath: spec.forProvider.region
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.globalSecondaryIndex[0].name
+                toFieldPath: spec.forProvider.indexName
+                policy:
+                  fromFieldPath: Required
               - type: FromCompositeFieldPath
                 fromFieldPath: status.dynamodbTable.id
-                toFieldPath: spec.parameters.tableName
+                toFieldPath: spec.forProvider.tableName
                 policy:
                   fromFieldPath: Required
               - type: ToCompositeFieldPath
-                fromFieldPath: status.dynamodbContributorInsights
+                fromFieldPath: status.atProvider
                 toFieldPath: status.dynamodbContributorInsights
 
-          - name: xTableItem
+          - name: xTableItemSet
             base:
               apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
-              kind: XTableItem
+              kind: XTableItemSet
             patches:
               - type: PatchSet
                 patchSetName: common-parameters
@@ -126,5 +138,5 @@ spec:
         apiVersion: pt.fn.crossplane.io/v1beta1
         kind: Filters
         filters:
-          - name: xContributorInsights
+          - name: contributorInsights
             expression: observed.composite.resource.spec.parameters.contributorInsights == true

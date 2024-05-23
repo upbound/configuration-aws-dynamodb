@@ -2,14 +2,17 @@
 apiVersion: apiextensions.crossplane.io/v1
 kind: CompositeResourceDefinition
 metadata:
-  name: xcontributorinsights.dynamodb.aws.platform.upbound.io
+  name: xtableitemsets.dynamodb.aws.platform.upbound.io
 spec:
   group: dynamodb.aws.platform.upbound.io
   names:
-    kind: XContributorInsight
-    plural: xcontributorinsights
+    kind: XTableItemSet
+    plural: xtableitemsets
+  claimNames:
+    kind: TableItemSet
+    plural: tableitemsets
   defaultCompositionRef:
-    name: contributorinsight.dynamodb.aws.platform.upbound.io
+    name: tableitemset.dynamodb.aws.platform.upbound.io
   versions:
     - name: v1alpha1
       served: true
@@ -23,7 +26,7 @@ spec:
               properties:
                 parameters:
                   description: >-
-                    Upbound Platform DynamoDB ContributorInsights
+                    Upbound Platform DynamoDB Table
                   properties:
                     deletionPolicy:
                       description: Defaults to Delete
@@ -32,15 +35,47 @@ spec:
                         - Orphan
                       type: string
                       default: Delete
-                    indexName:
-                      description: The global secondary index name
+                    hashKey:
+                      description: Hash key to use for lookups and identification of
+                        the item
+                      type: string
+                    item:
+                      description: JSON representation of a map of attribute name/value
+                        pairs, one for each attribute. Only the primary key attributes
+                        are required; you can optionally provide other attribute name-value
+                        pairs for the item.
+                      type: string
+                    rangeKey:
+                      description: Range key to use for lookups and identification of
+                        the item. Required if there is range key defined in the table.
                       type: string
                     region:
                       description: Region is the region you'd like your resource to
                         be created in.
                       type: string
+                    tableItems:
+                      description: >-
+                        Array of tableItems.
+                      items:
+                        properties:
+                          hashKey:
+                            description: >-
+                              Hash key to use for lookups and
+                              identification of the item.
+                            type: string
+                          item:
+                            description: >-
+                              JSON representation of a map of
+                              attribute name/value pairs, one for each
+                              attribute. Only the primary key attributes
+                              are required; you can optionally
+                              provide other attribute name-value
+                              pairs for the item.
+                            type: string
+                        type: object
+                      type: array
                     tableName:
-                      description: The name of the table to enable contributor insights
+                      description: Name of the table to contain the item.
                       type: string
                     tableNameRef:
                       description: Reference to a Table to populate tableName.
@@ -131,6 +166,6 @@ spec:
                 - parameters
             status:
               properties:
-                dynamodbContributorInsights:
+                dynamodbTableItems:
                   type: object
                   x-kubernetes-preserve-unknown-fields: true
