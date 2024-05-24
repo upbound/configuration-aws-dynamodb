@@ -1,0 +1,44 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: tableitemset.dynamodb.aws.platform.upbound.io
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+    kind: XTableItemSet
+
+  mode: Pipeline
+  pipeline:
+    - step: go-templating
+      functionRef:
+        name: crossplane-contrib-function-go-templating
+      input:
+        apiVersion: gotemplating.fn.crossplane.io/v1beta1
+        kind: GoTemplate
+        source: Inline
+        inline:
+          template: |
+            {{ $parameters := .observed.composite.resource.spec.parameters }}
+            {{- range $i, $tableItem := $parameters.tableItems }}
+            ---
+            apiVersion: dynamodb.aws.upbound.io/v1beta1
+            kind: TableItem
+            metadata:
+              annotations:
+                {{ setResourceNameAnnotation (print "item-" $i) }}
+            spec:
+              deletionPolicy: {{ $parameters.deletionPolicy }}
+              forProvider:
+                region: {{ $parameters.region }}
+                hashKey: {{ $parameters.hashKey }}
+                rangeKey: {{ $parameters.rangeKey }}
+                item: {{ $tableItem.item }}
+                tableName: {{ $parameters.tableName }}
+            {{ end }}
+
+    - step: automatically-detect-ready-composed-resources
+      functionRef:
+        name: crossplane-contrib-function-auto-ready

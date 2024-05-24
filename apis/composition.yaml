@@ -1,0 +1,142 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: instance.dynamodb.aws.platform.upbound.io
+  labels:
+    provider: aws
+spec:
+  compositeTypeRef:
+    apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+    kind: XInstance
+
+  mode: Pipeline
+  pipeline:
+    - step: patch-and-transform
+      functionRef:
+        name: crossplane-contrib-function-patch-and-transform
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Resources
+        patchSets:
+          - name: common-parameters
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.providerConfigName
+                toFieldPath: spec.parameters.providerConfigName
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionPolicy
+                toFieldPath: spec.parameters.deletionPolicy
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.region
+                toFieldPath: spec.parameters.region
+        resources:
+          - name: xTable
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XTable
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.attribute
+                toFieldPath: spec.parameters.attribute
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.billingMode
+                toFieldPath: spec.parameters.billingMode
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.globalSecondaryIndex
+                toFieldPath: spec.parameters.globalSecondaryIndex
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.hashKey
+                toFieldPath: spec.parameters.hashKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.rangeKey
+                toFieldPath: spec.parameters.rangeKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.readCapacity
+                toFieldPath: spec.parameters.readCapacity
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tags
+                toFieldPath: spec.parameters.tags
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.writeCapacity
+                toFieldPath: spec.parameters.writeCapacity
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTable
+                toFieldPath: status.dynamodbTable
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableReplica
+                toFieldPath: spec.parameters.tableReplica
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableReplicaRegion
+                toFieldPath: spec.parameters.tableReplicaRegion
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTable
+                toFieldPath: status.dynamodbTable
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTableReplica
+                toFieldPath: status.dynamodbTableReplica
+
+          - name: contributorInsights
+            base:
+              apiVersion: dynamodb.aws.upbound.io/v1beta1
+              kind: ContributorInsights
+            patches:
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.providerConfigName
+                toFieldPath: spec.providerConfigRef.name
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.deletionPolicy
+                toFieldPath: spec.deletionPolicy
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.region
+                toFieldPath: spec.forProvider.region
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.globalSecondaryIndex[0].name
+                toFieldPath: spec.forProvider.indexName
+                policy:
+                  fromFieldPath: Required
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.id
+                toFieldPath: spec.forProvider.tableName
+                policy:
+                  fromFieldPath: Required
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.atProvider
+                toFieldPath: status.dynamodbContributorInsights
+
+          - name: xTableItemSet
+            base:
+              apiVersion: dynamodb.aws.platform.upbound.io/v1alpha1
+              kind: XTableItemSet
+            patches:
+              - type: PatchSet
+                patchSetName: common-parameters
+              - type: FromCompositeFieldPath
+                fromFieldPath: status.dynamodbTable.id
+                toFieldPath: spec.parameters.tableName
+                policy:
+                  fromFieldPath: Required
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.tableItems
+                toFieldPath: spec.parameters.tableItems
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.hashKey
+                toFieldPath: spec.parameters.hashKey
+              - type: FromCompositeFieldPath
+                fromFieldPath: spec.parameters.rangeKey
+                toFieldPath: spec.parameters.rangeKey
+              - type: ToCompositeFieldPath
+                fromFieldPath: status.dynamodbTableItems
+                toFieldPath: status.dynamodbTableItems
+
+    - step: cel-filter
+      functionRef:
+        name: crossplane-contrib-function-cel-filter
+      input:
+        apiVersion: pt.fn.crossplane.io/v1beta1
+        kind: Filters
+        filters:
+          - name: contributorInsights
+            expression: observed.composite.resource.spec.parameters.contributorInsights == true
