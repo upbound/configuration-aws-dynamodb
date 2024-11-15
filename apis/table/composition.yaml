@@ -15,12 +15,14 @@ spec:
     - step: go-templating
       functionRef:
         name: crossplane-contrib-function-go-templating
+        # name: function-go-templating
       input:
         apiVersion: gotemplating.fn.crossplane.io/v1beta1
         kind: GoTemplate
         source: Inline
         inline:
           template: |
+            {{ $annotations := .observed.composite.resouce.metadata.annotations }}
             {{ $spec := .observed.composite.resource.spec }}
             {{ $tableStatus := .observed.resources.table.resource.status }}
             {{ $tableReplicaStatus := .observed.resources.tableReplica.resource.status }}
@@ -103,10 +105,11 @@ spec:
               dynamodbTableReplica:
               {{ $tableReplicaStatus.atProvider | toYaml | nindent 4 }}
               {{- end }}
-            {{ else }}
+            {{- else }}
             status: {}
             {{- end }}
 
     - step: automatically-detect-ready-composed-resources
       functionRef:
         name: crossplane-contrib-function-auto-ready
+        # name: function-auto-ready

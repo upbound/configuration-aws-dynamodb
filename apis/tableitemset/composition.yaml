@@ -15,6 +15,7 @@ spec:
     - step: go-templating
       functionRef:
         name: crossplane-contrib-function-go-templating
+        # name: function-go-templating
       input:
         apiVersion: gotemplating.fn.crossplane.io/v1beta1
         kind: GoTemplate
@@ -41,4 +42,5 @@ spec:
 
     - step: automatically-detect-ready-composed-resources
       functionRef:
-        name: crossplane-contrib-function-auto-ready
+        # name: crossplane-contrib-function-auto-ready
+        name: function-auto-ready

@@ -134,6 +134,7 @@ spec:
     - step: cel-filter
       functionRef:
         name: crossplane-contrib-function-cel-filter
+        #name: function-cel-filter
       input:
         apiVersion: pt.fn.crossplane.io/v1beta1
         kind: Filters
