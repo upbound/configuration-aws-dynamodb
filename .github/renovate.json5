@@ -5,8 +5,12 @@
     'helpers:pinGitHubActionDigests',
     ':semanticCommits',
   ],
-  rebaseWhen: 'conflicted',
+  rebaseWhen: 'auto',
+  rebaseLabel: 'rebase',
   prConcurrentLimit: 5,
+  autoApprove: true,
+  automerge: true,
+  automergeType: 'pr',
   baseBranches: [
     'main',
   ],
