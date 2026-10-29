@@ -25,7 +25,15 @@
     '**/__tests__/**',
     '**/test/**',
     '**/tests/**',
-    '**/__fixtures__/**'
+    '**/__fixtures__/**',
+    // Synced from upbound/sa-up (gitops/shared-files). Renovate bumps them there
+    // (including the tool versions in the Makefile); bumping them here too gets
+    // overwritten (and looks like a downgrade) on the next sync.
+    '.github/workflows/ci.yaml',
+    '.github/workflows/e2e.yaml',
+    '.github/workflows/tag.yml',
+    '.github/workflows/yamllint.yaml',
+    'Makefile',
   ],
   crossplane: {
     fileMatch: ['(^|/)examples/.*\\.ya?ml$']
@@ -44,42 +52,12 @@
       groupName: 'crossplane dependencies',
     },
     {
-      matchFileNames: [
-        'Makefile',
-      ],
-      groupName: 'Makefile dependencies',
-    },
-    {
       matchManagers: ['crossplane'],
       matchFileNames: ['examples/**'],
       groupName: 'examples'
     },
   ],
   customManagers: [
-    {
-      customType: 'regex',
-      description: 'Bump up version in the Makefile',
-      fileMatch: [
-        '^Makefile$',
-      ],
-      matchStrings: [
-        'UP_VERSION = (?<currentValue>.*?)\\n',
-      ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'upbound/up',
-    },
-    {
-      customType: 'regex',
-      description: 'Bump uptest version in the Makefile',
-      fileMatch: [
-        '^Makefile$',
-      ],
-      matchStrings: [
-        'UPTEST_VERSION = (?<currentValue>.*?)\\n',
-      ],
-      datasourceTemplate: 'github-releases',
-      depNameTemplate: 'upbound/uptest',
-    },
     {
       customType: 'regex',
       description: 'Bump providers/functions/configurations in crossplane.yaml',
